@@ -1,7 +1,10 @@
 // Project CSI2120/CSI2520
 // Winter 2026
 // Robert Laganiere, uottawa.ca
-//Complete par : Meagan Partington - 300416906
+
+//Complete par :
+// Meagan Partington - 300416906
+// Anastasia Sadovskyy - 300426037
 
 // this is the (incomplete) Resident class
 public class Resident {
