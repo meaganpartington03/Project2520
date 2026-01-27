@@ -1,7 +1,10 @@
 // Project CSI2120/CSI2520
 // Winter 2026
 // Robert Laganiere, uottawa.ca
-//Completer par: Meagan Partington - 300416906
+//Completer par: 
+// Meagan Partington - 300416906
+
+import java.util.ArrayList;
 
 // this is the (incomplete) Program class
 public class Program {
@@ -57,7 +60,7 @@ public class Program {
 	//verifie si un resident fait partie de la liste de preference du programme MP
 	public boolean member(int residentID) {
 		//parcourt toute la liste de preference MP
-		for (int i = 0; i < rol.lengthID) {
+		for (int i = 0; i < rol.length; i++) {
 			//si on trouver l'ID le resident est dans la liste MP
 			if (rol[i] == residentID) {
 				return true;
@@ -80,7 +83,7 @@ public class Program {
 		return -1;
 	}
 
-	//trouve le resident jumeler qui est dans le pire rang
+	//trouve le resident jumeler qui est dans le pire rang MP
 	public Resident leastPreferred() {
 		//si aucun resident n'est jumele sa retourne null MP
 		if (matchedResidents.isEmpty()) {
@@ -104,7 +107,41 @@ public class Program {
 		return worst;
 	}
 
+	//essaie d'ajouter un resident au programme, l'ajoute si le quote n'est pas atteint ou remplace le resident le moins preferer MP
+	public void addResident(Resident resident) {
+		//verifie si le resident est dans la liste de preference du programME MP
+		if (!member(resident.getResidentID())) {
+			//si le resident n'est pas dans le ROL on ne peut pas le jumeler MP
+			return;
+		}
 
+		//si le programme n'as pas encore atteint son quota MP
+		if (matchedResidents.size() < quota) {
+			//ont peut ajouter le resident
+			matchedResidents.add(resident);
+			resident.setMatchedProgram(this); //update le jumelage du resident MP
+			resident.setMatchedRank(rank(resident.getResidentID())); //enregistre sont rang MP
+		}
+
+		//si le quota est atteint il faut donc verifier si on peut remplacer quelqu'un MP
+		else {
+			Resident worst = leastPreferred();
+			int worstRank = rank(worst.getResidentID());
+			int newRank = rank(resident.getResidentID());
+			//si le nouveau resident a un meilleur rang AKA nombre plus petit MP
+			if (newRank < worstRank) {
+				//retire le resident le moin preferer MP
+				matchedResidents.remove(worst);
+				worst.setMatchedProgram(null); //le resident retirer n'as plus de jumelage MP
+				worst.setMatchedRank(-1);
+				//ont ajoute le nouveau resident MP
+				matchedResidents.add(resident);
+				resident.setMatchedProgram(this);
+				resident.setMatchedRank(newRank);
+			}
+			//si le nouveau resident n'as pas un meilleur rang on fait rien car le nouveau resident n'est pas ajouter MP 
+		}
+	}
 
 
 	// string representation
