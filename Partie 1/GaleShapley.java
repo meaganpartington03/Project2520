@@ -1,8 +1,10 @@
 // Project CSI2120/CSI2520
 // Winter 2026
 // Robert Laganiere, uottawa.ca
-//Completer par:
+
+//Complete par :
 // Meagan Partington - 300416906
+// Anastasia Sadovskyy - 300426037
 
 import java.io.*;
 import java.util.HashMap;
@@ -182,12 +184,20 @@ public class GaleShapley {
 		}	
     }
 
+	// Algorithm
+	public void runGaleShapley(){
+		System.out.println("Hiii");
+	}
+
+
 	public static void main(String[] args) {
 		
 		
 		try {
 			
 			GaleShapley gs= new GaleShapley(args[0],args[1]);
+
+			gs.runGaleShapley();
 			
 			System.out.println(gs.residents);
 			System.out.println(gs.programs);
