@@ -145,7 +145,20 @@ public class Program {
 		}
 	}
 
+	// compare program ROL with residents ID
+	public int compareProgramROLwithResID(Resident r, int[] ROL){
 
+		for(int i = 0; i < rol.length; i++){
+			if(r.getResidentID() == rol[i]){
+				return i;
+			}
+		}
+
+		return -1;
+
+	}
+
+	
 	// string representation
 	public String toString() {
       

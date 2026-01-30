@@ -185,22 +185,64 @@ public class GaleShapley {
     }
 
 	// Algorithm
-	public void runGaleShapley(){
-		System.out.println("Hiii");
+	public void GaleShapleyAlgo(){
+
+		boolean progress = false;
+
+
+		while(progress){
+
+			for(Resident r: residents.values()){ // Go through all the residents in the resident hashmap
+				if(r.getMatchedProgram() != null){ // means they are matched, skip that resident
+					continue; // continue to the next resident
+				}
+
+				String[] resROL = r.getROL(); // So I need to go through the programs in the residents ROLs
+
+				for(int i = 0; i < resROL.length; i++){ // Now I'm looping through the residents ROL
+					// Now I need to go to the program and see if the resident is on the preference list
+					// In this case, i is the program and it is an array of strings, so String[]
+
+					String p_id = resROL[i]; // program ID at index i
+
+					// Now we need to see if the resident is in that program ROL
+					// So we need the ROL of the program, so we need to get the program
+					
+					Program p = programs.get(p_id); // using the program ID, we get the program
+					int[] p_ROL = p.getROL(); // now we can call a getter to get the ROL
+
+					int doesProgHaveResID = p.compareProgramROLwithResID(r, p_ROL);
+
+					if(doesProgHaveResID >= 0){ // This means that the program ROL has the residents' ID
+						p.addResident(r);
+						break;
+					}
+				}
+
+			}
+		}
 	}
 
 
 	public static void main(String[] args) {
 		
-		
 		try {
-			
-			GaleShapley gs= new GaleShapley(args[0],args[1]);
 
-			gs.runGaleShapley();
+			System.out.println("Test 1");
+			
+			//GaleShapley gs= new GaleShapley(args[0],args[1]);
+			GaleShapley gs= new GaleShapley("residentsSmall.csv", "programsSmall.csv");
+			
+			System.out.println("Test 2");
+
+			gs.GaleShapleyAlgo();
+
+			System.out.println("Test 3");
 			
 			System.out.println(gs.residents);
 			System.out.println(gs.programs);
+
+			System.out.println("Test 4");
 			
         } catch (Exception e) {
             System.err.println("Error reading the file: " + e.getMessage());
