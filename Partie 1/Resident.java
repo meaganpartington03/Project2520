@@ -14,9 +14,9 @@ public class Resident {
 	private String lastname;
 	private String[] rol;
 
-	//attributs pour le jumelage MP
-	private Program matchedProgram; //programme que le resident est jumeler MP
-	private int matchedRank; //rang du resident dans le program jumeler MP
+	//attributs pour le jumelage 
+	private Program matchedProgram; //programme que le resident est jumeler 
+	private int matchedRank; //rang du resident dans le program jumeler 
 	
 	// constructs a Resident
     public Resident(int id, String fname, String lname) {
@@ -24,8 +24,8 @@ public class Resident {
 		residentID= id;
 		firstname= fname;
 		lastname= lname;
-		matchedProgram = null; //il y a aucun jumelage au debut MP
-		matchedRank = -1; //il n'y a pas de rang si pas de jumelage MP
+		matchedProgram = null; //il y a aucun jumelage au debut 
+		matchedRank = -1; //il n'y a pas de rang si pas de jumelage 
 	}
 
     // the rol in order of preference
@@ -34,42 +34,42 @@ public class Resident {
 		this.rol= rol;
 	}
 
-	//retourne l'identifiant du resident MP
+	//retourne l'identifiant du resident 
 	public int getResidentID() {
 		return residentID;
 	}
 
-	//retourne le prenon MP
+	//retourne le prenon 
 	public String getFirstname() {
 		return firstname;
 	}
 
-	//retourne le nom de famille MP
+	//retourne le nom de famille 
 	public String getLastname() {
 		return lastname;
 	}
 
-	//retourne la liste des programmes preferes MP
+	//retourne la liste des programmes preferes 
 	public String[] getROL() {
 		return rol;
 	}
 
-	//retourne le programm que le resident est jumele, null si aucun MP
+	//retourne le programm que le resident est jumele, null si aucun 
 	public Program getMatchedProgram() {
 		return matchedProgram;
 	}
 
-	//defnit le programme de jumelage pour le resident MP
+	//defnit le programme de jumelage pour le resident 
 	public void setMatchedProgram(Program program) {
 		this.matchedProgram = program;
 	}
 
-	//retourne le rang du resident dans sont programme MP
+	//retourne le rang du resident dans sont programme 
 	public int getMatchedRank() {
 		return matchedRank;
 	}
 
-	//definit le rang du resident dans sont programme MP
+	//definit le rang du resident dans sont programme 
 	public void setMatchedRank(int rank) {
 		this.matchedRank = rank;
 	}
