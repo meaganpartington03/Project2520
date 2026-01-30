@@ -77,6 +77,6 @@ public class Resident {
 	// string representation
 	public String toString() {
       
-       return "["+residentID+"]: "+firstname+" "+ lastname+" ("+rol.length+")";	  
+       return "["+residentID+"]: "+firstname+" "+ lastname+" ("+rol.length+")\n";	  
 	}
 }

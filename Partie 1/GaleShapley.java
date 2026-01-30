@@ -220,6 +220,7 @@ public class GaleShapley {
 				}
 
 			}
+
 		}
 	}
 
@@ -227,22 +228,16 @@ public class GaleShapley {
 	public static void main(String[] args) {
 		
 		try {
-
-			System.out.println("Test 1");
 			
 			//GaleShapley gs= new GaleShapley(args[0],args[1]);
-			GaleShapley gs= new GaleShapley("residentsSmall.csv", "programsSmall.csv");
-			
-			System.out.println("Test 2");
+			GaleShapley gs= new GaleShapley("./residentSmall.csv", "./programSmall.csv");
 
 			gs.GaleShapleyAlgo();
-
-			System.out.println("Test 3");
 			
 			System.out.println(gs.residents);
+			System.out.println("");
 			System.out.println(gs.programs);
 
-			System.out.println("Test 4");
 			
         } catch (Exception e) {
             System.err.println("Error reading the file: " + e.getMessage());

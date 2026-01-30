@@ -158,10 +158,10 @@ public class Program {
 
 	}
 
-	
+
 	// string representation
 	public String toString() {
       
-       return "["+programID+"]: "+name+" {"+ quota+ "}" +" ("+rol.length+")";	  
+       return "["+programID+"]: "+name+" {"+ quota+ "}" +" ("+rol.length+")\n";	  
 	}
 }
