@@ -230,6 +230,9 @@ public class GaleShapley {
 		try {
 			
 			//GaleShapley gs= new GaleShapley(args[0],args[1]);
+			
+			//GaleShapley gs= new GaleShapley("./residents4000.csv", "./programs4000.csv");
+			//GaleShapley gs= new GaleShapley("./residentsLarge.csv", "./programsLarge.csv");
 			GaleShapley gs= new GaleShapley("./residentSmall.csv", "./programSmall.csv");
 
 			gs.GaleShapleyAlgo();
