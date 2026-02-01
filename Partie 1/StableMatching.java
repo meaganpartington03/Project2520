@@ -1,0 +1,316 @@
+// Project CSI2120/CSI2520
+// Winter 2026
+// Robert Laganiere, uottawa.ca
+
+//Complete par :
+// Meagan Partington - 300416906
+// Anastasia Sadovskyy - 300426037
+
+import java.io.*;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Comparator;
+
+
+// this is the (incomplete) class that will generate the resident and program maps
+public class StableMatching {
+	
+	public HashMap<Integer,Resident> residents;
+	public HashMap<String,Program> programs;
+	
+
+	public StableMatching(String residentsFilename, String programsFilename) throws IOException, 
+													NumberFormatException {
+		
+		readResidents(residentsFilename);
+		readPrograms(programsFilename);
+	}
+	
+	// Reads the residents csv file
+	// It populates the residents HashMap
+    public void readResidents(String residentsFilename) throws IOException, 
+													NumberFormatException {
+
+        String line;
+		residents= new HashMap<Integer,Resident>();
+		BufferedReader br = new BufferedReader(new FileReader(residentsFilename)); 
+
+		int residentID;
+		String firstname;
+		String lastname;
+		String plist;
+		String[] rol;
+
+		// Read each line from the CSV file
+		line = br.readLine(); // skipping first line
+		while ((line = br.readLine()) != null && line.length() > 0) {
+
+			int split;
+			int i;
+
+			// extracts the resident ID
+			for (split=0; split < line.length(); split++) {
+				if (line.charAt(split) == ',') {
+					break;
+				} 
+			}
+			if (split > line.length()-2)
+				throw new IOException("Error: Invalid line format: " + line);
+
+			residentID= Integer.parseInt(line.substring(0,split));
+			split++;
+
+			// extracts the resident firstname
+			for (i= split ; i < line.length(); i++) {
+				if (line.charAt(i) == ',') {
+					break;
+				} 
+			}
+			if (i > line.length()-2)
+				throw new IOException("Error: Invalid line format: " + line);
+
+			firstname= line.substring(split,i);
+			split= i+1;
+			
+			// extracts the resident lastname
+			for (i= split ; i < line.length(); i++) {
+				if (line.charAt(i) == ',') {
+					break;
+				} 
+			}
+			if (i > line.length()-2)
+				throw new IOException("Error: Invalid line format: " + line);
+
+			lastname= line.substring(split,i);
+			split= i+1;		
+				
+			Resident resident= new Resident(residentID,firstname,lastname);
+
+			for (i= split ; i < line.length(); i++) {
+				if (line.charAt(i) == '"') {
+					break;
+				} 
+			}
+			
+			// extracts the program list
+			plist= line.substring(i+2,line.length()-2);
+			String delimiter = ","; // Assuming values are separated by commas
+			rol = plist.split(delimiter);
+			
+			resident.setROL(rol);
+			
+			residents.put(residentID,resident);
+		}	
+    }
+
+	
+	// Reads the programs csv file
+	// It populates the programs HashMap
+    public void readPrograms(String programsFilename) throws IOException, 
+													NumberFormatException {
+
+        String line;
+		programs= new HashMap<String,Program>();
+		BufferedReader br = new BufferedReader(new FileReader(programsFilename)); 
+
+		String programID;
+		String name;
+		int quota;
+		String rlist;
+		int[] rol;
+
+		// Read each line from the CSV file
+		line = br.readLine(); // skipping first line
+		while ((line = br.readLine()) != null && line.length() > 0) {
+
+			int split;
+			int i;
+
+			// extracts the program ID
+			for (split=0; split < line.length(); split++) {
+				if (line.charAt(split) == ',') {
+					break;
+				} 
+			}			
+			if (split > line.length()-2)
+				throw new IOException("Error: Invalid line format: " + line);
+
+
+			programID= line.substring(0,split);
+			split++;
+
+			// extracts the program name
+			for (i= split ; i < line.length(); i++) {
+				if (line.charAt(i) == ',') {
+					break;
+				} 
+			}
+			if (i > line.length()-2)
+				throw new IOException("Error: Invalid line format: " + line);
+			
+			name= line.substring(split,i);
+			split= i+1;
+			
+			// extracts the program quota
+			for (i= split ; i < line.length(); i++) {
+				if (line.charAt(i) == ',') {
+					break;
+				} 
+			}
+			if (i > line.length()-2)
+				throw new IOException("Error: Invalid line format: " + line);
+
+			quota= Integer.parseInt(line.substring(split,i));
+			split= i+1;		
+				
+			Program program= new Program(programID,name,quota);
+
+			for (i= split ; i < line.length(); i++) {
+				if (line.charAt(i) == '"') {
+					break;
+				} 
+			}
+			
+			// extracts the resident list
+			rlist= line.substring(i+2,line.length()-2);
+			String delimiter = ","; // Assuming values are separated by commas
+			String[] rol_string = rlist.split(delimiter);
+			rol= new int[rol_string.length];
+			for (int j=0; j<rol_string.length; j++) {
+				
+				rol[j]= Integer.parseInt(rol_string[j]);
+			}
+			
+			program.setROL(rol);
+			
+			programs.put(programID,program);
+		}	
+    }
+
+	// Algorithm
+	public void GaleShapleyAlgo(){
+
+		HashMap<Integer, Integer> nextProposal = new HashMap<>();
+
+		for(Integer resID : residents.keySet()){
+        nextProposal.put(resID, 0);
+    	}
+
+		boolean progress = true ;
+
+
+		while(progress){
+
+			//reset to false, if any matches are made it'll be set back to true
+			progress = false ;
+
+			for(Resident r: residents.values()){ // Go through all the residents in the resident hashmap
+
+				if(r.getMatchedProgram() != null){ // means they are matched, skip that resident
+					continue; // continue to the next resident
+				}
+
+				String[] resROL = r.getROL(); // So I need to go through the programs in the residents ROLs
+
+				int startIndex = nextProposal.get(r.getResidentID());
+
+
+				for(int i = startIndex; i < resROL.length; i++){ // Now I'm looping through the residents ROL
+					// Now I need to go to the program and see if the resident is on the preference list
+					// In this case, i is the program and it is an array of strings, so String[]
+
+					String p_id = resROL[i]; // program ID at index i
+
+					// Now we need to see if the resident is in that program ROL
+					// So we need the ROL of the program, so we need to get the program
+					
+					Program p = programs.get(p_id); // using the program ID, we get the program
+
+					if(p.member(r.getResidentID())) {
+
+						nextProposal.put(r.getResidentID(), i + 1); 
+
+						//try adding the resident to the program
+						p.addResident(r);
+
+						if(r.getMatchedProgram() != null){
+                        	progress = true; 
+                        	break;
+                   		}
+
+					} else {
+
+						nextProposal.put(r.getResidentID(), i + 1);
+					
+						}	
+				}
+			}
+		}
+	}
+
+
+	public static void main(String[] args) {
+		
+		try {
+			
+			//GaleShapley gs= new GaleShapley(args[0],args[1]);
+			
+			//GaleShapley gs= new GaleShapley("./residents4000.csv", "./programs4000.csv");
+			StableMatching gs= new StableMatching("./residentsLarge.csv", "./programsLarge.csv");
+			//GaleShapley gs= new GaleShapley("./residentSmall.csv", "./programSmall.csv");
+
+			gs.GaleShapleyAlgo();
+			
+			//create a list to hold all residents so we sort 
+        	ArrayList<Resident> sortedResidents = new ArrayList<>();
+        
+			//add residents from the HashMap to the ArrayList
+			for(Resident r : gs.residents.values()) {
+				sortedResidents.add(r);
+			}
+        
+			//sort the residents alphabeticaly by last name
+			sortedResidents.sort(Comparator.comparing(Resident::getLastname));
+			
+			//print each resident with their info
+			for(Resident r : sortedResidents) {
+				//print lastname, firstnam and residentID
+				//System.out.print(r.getLastname() + ", " + r.getFirstname() + ", " + r.getResidentID() + ", ");
+				System.out.print(r.getResidentID() + ", " + r.getFirstname() + ", " + r.getLastname() + ", ");
+				
+				//check if resident got matched to a program
+				if(r.getMatchedProgram() != null) {
+					// resident is matched 
+					Program p = r.getMatchedProgram();
+					System.out.println(p.getProgramID() + ", " + p.getName());
+				} else {
+					//resident is not matched 
+					System.out.println("XXX,NOT_MATCHED");
+				}
+			}
+        
+        //count how many residents didnt get matched
+        int unmatchedCount = 0;
+        for(Resident r : gs.residents.values()) {
+            if(r.getMatchedProgram() == null) {
+                unmatchedCount++;
+            }
+        }
+        
+        //count how many positions are still available in programs
+        int availablePositions = 0;
+        for(Program p : gs.programs.values()) {
+            //available positions 
+            availablePositions += (p.getQuota() - p.getMatchedResidents().size());
+        }
+        
+        //print the stats
+        System.out.println("\nNumber of unmatched residents: " + unmatchedCount);
+        System.out.println("Number of positions available: " + availablePositions);
+
+			
+        } catch (Exception e) {
+            System.err.println("Error reading the file: " + e.getMessage());
+        }
+	}
+}
