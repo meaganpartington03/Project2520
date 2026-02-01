@@ -7,6 +7,7 @@
 // Anastasia Sadovskyy - 300426037
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 // this is the (incomplete) Program class
 public class Program {
@@ -15,6 +16,8 @@ public class Program {
 	private String name;
 	private int quota;
 	private int[] rol;
+	//hashMap pour recherche du rang d'un resident
+	private HashMap<Integer, Integer> rolMap;
 
 	//attribut pour le jumelage MP
 	private ArrayList<Resident> matchedResidents; //listes des residents actuellement jumeler 
@@ -30,8 +33,12 @@ public class Program {
 
     // the rol in order of preference
 	public void setROL(int[] rol) {
-		
-		this.rol= rol;
+		this.rol = rol;
+		//construire le HashMap pour recherche rapide
+		rolMap = new HashMap<>();
+		for (int i = 0; i < rol.length; i++) {
+        	rolMap.put(rol[i], i);
+    }
 	}
 
 	//retourne l'identifiant du programme 
@@ -61,27 +68,16 @@ public class Program {
 
 	//verifie si un resident fait partie de la liste de preference du programme 
 	public boolean member(int residentID) {
-		//parcourt toute la liste de preference 
-		for (int i = 0; i < rol.length; i++) {
-			//si on trouver l'ID le resident est dans la liste 
-			if (rol[i] == residentID) {
-				return true;
-			}
-		}
-		//si on n'as pas trouver l'id le resident n'est pas dans la liste 
-		return false;
+		// Vérifie instantanément si le resident est dans le HashMap
+    	return rolMap.containsKey(residentID);
 	}
 	
 	//retourne le rang d'un resident dans la liste de preference 
 	public int rank(int residentID) {
-		//parcourt toute la liste de preference 
-		for (int i = 0; i < rol.length; i++) {
-			//si on trouve l'id retourne sa position 
-			if (rol[i] == residentID) {
-				return i; //la position est le rang
-			}
+		//retourne le rang, ou -1 si pas trouvé
+		if (rolMap.containsKey(residentID)) {
+			return rolMap.get(residentID);
 		}
-		//si on n'as pas trouver l'ID retourne -1 pour demontrer ceci 
 		return -1;
 	}
 

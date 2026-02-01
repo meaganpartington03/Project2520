@@ -8,6 +8,9 @@
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Comparator;
+
 
 // this is the (incomplete) class that will generate the resident and program maps
 public class GaleShapley {
@@ -187,19 +190,32 @@ public class GaleShapley {
 	// Algorithm
 	public void GaleShapleyAlgo(){
 
-		boolean progress = false;
+		HashMap<Integer, Integer> nextProposal = new HashMap<>();
+
+		for(Integer resID : residents.keySet()){
+        nextProposal.put(resID, 0);
+    	}
+
+		boolean progress = true ;
 
 
 		while(progress){
 
+			//reset to false, if any matches are made it'll be set back to true
+			progress = false ;
+
 			for(Resident r: residents.values()){ // Go through all the residents in the resident hashmap
+
 				if(r.getMatchedProgram() != null){ // means they are matched, skip that resident
 					continue; // continue to the next resident
 				}
 
 				String[] resROL = r.getROL(); // So I need to go through the programs in the residents ROLs
 
-				for(int i = 0; i < resROL.length; i++){ // Now I'm looping through the residents ROL
+				int startIndex = nextProposal.get(r.getResidentID());
+
+
+				for(int i = startIndex; i < resROL.length; i++){ // Now I'm looping through the residents ROL
 					// Now I need to go to the program and see if the resident is on the preference list
 					// In this case, i is the program and it is an array of strings, so String[]
 
@@ -209,18 +225,27 @@ public class GaleShapley {
 					// So we need the ROL of the program, so we need to get the program
 					
 					Program p = programs.get(p_id); // using the program ID, we get the program
-					int[] p_ROL = p.getROL(); // now we can call a getter to get the ROL
 
-					int doesProgHaveResID = p.compareProgramROLwithResID(r, p_ROL);
+					if(p.member(r.getResidentID())) {
 
-					if(doesProgHaveResID >= 0){ // This means that the program ROL has the residents' ID
+						nextProposal.put(r.getResidentID(), i + 1); 
+
+						//try adding the resident to the program
 						p.addResident(r);
-						break;
-					}
+
+						if(r.getMatchedProgram() != null){
+                        	progress = true; 
+                        	break;
+                   		}
+
+					} else {
+
+						nextProposal.put(r.getResidentID(), i + 1);
+					
+						}	
+
 				}
-
 			}
-
 		}
 	}
 
@@ -234,9 +259,51 @@ public class GaleShapley {
 
 			gs.GaleShapleyAlgo();
 			
-			System.out.println(gs.residents);
-			System.out.println("");
-			System.out.println(gs.programs);
+			//create a list to hold all residents so we sort 
+        	ArrayList<Resident> sortedResidents = new ArrayList<>();
+        
+			//add residents from the HashMap to the ArrayList
+			for(Resident r : gs.residents.values()) {
+				sortedResidents.add(r);
+			}
+        
+			//sort the residents alphabeticaly by last name
+			sortedResidents.sort(Comparator.comparing(Resident::getLastname));
+			
+			//print each resident with their info
+			for(Resident r : sortedResidents) {
+				//print lastname, firstnam and residentID
+				System.out.print(r.getLastname() + "," + r.getFirstname() + "," + r.getResidentID() + ",");
+				
+				//check if resident got matched to a program
+				if(r.getMatchedProgram() != null) {
+					// resident is matched 
+					Program p = r.getMatchedProgram();
+					System.out.println(p.getProgramID() + "," + p.getName());
+				} else {
+					//resident is not matched 
+					System.out.println("XXX,NOT_MATCHED");
+				}
+			}
+        
+        //count how many residents didnt get matched
+        int unmatchedCount = 0;
+        for(Resident r : gs.residents.values()) {
+            if(r.getMatchedProgram() == null) {
+                unmatchedCount++;
+            }
+        }
+        
+        //count how many positions are still available in programs
+        int availablePositions = 0;
+        for(Program p : gs.programs.values()) {
+            //available positions 
+            availablePositions += (p.getQuota() - p.getMatchedResidents().size());
+        }
+        
+        //print the stats
+        System.out.println("\nNumber of unmatched residents: " + unmatchedCount);
+        System.out.println("Number of positions available: " + availablePositions);
 
 			
         } catch (Exception e) {
